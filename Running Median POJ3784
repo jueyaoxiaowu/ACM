@@ -1,0 +1,168 @@
+#include<iostream>
+using namespace std;
+#define N 10000+10
+int big[N];
+int small[N];
+void print(int len);
+void swap(int& a, int& b)
+{
+	int t = a;
+	a = b;
+	b = t;
+}
+void up(int* pile, int p, int check)//将pile[p]向上调整
+{
+	while (p / 2)
+	{
+		if (check)//check为1则表示大根堆
+		{
+			if (pile[p] > pile[p / 2])//不满足大根堆性质
+			{
+				swap(pile[p], pile[p / 2]);
+				p /= 2;
+			}
+			else
+			{
+				break;
+			}
+		}
+		else
+		{
+			if (pile[p] < pile[p / 2])//不满足小根堆性质
+			{
+				swap(pile[p], pile[p / 2]);
+				p /= 2;
+			}
+			else
+			{
+				break;
+			}
+		}
+	}
+}
+void insert(int* pile, int& len, int x, int check)//插入一个数在数组末尾
+{
+	pile[++len] = x;
+	up(pile, len, check);
+}
+int gettop(int* pile)
+{
+	return pile[1];
+}
+void down(int* pile, int p, int& len, int check)
+{
+	int t = 2 * p;//p的左节点
+	while (t <= len)
+	{
+		if (check)
+		{
+			if (t < len && pile[t] < pile[t + 1])//左右子节点取最大的
+			{//t<len防止出现pile[n+1]导致程序错误
+				t++;
+			}
+			if (pile[p] < pile[t])
+			{
+				swap(pile[p], pile[t]);
+				p = t;
+				t = p * 2;//更新左节点的值;
+			}
+			else
+			{
+				break;
+			}
+		}
+		else
+		{
+			if (t < len && pile[t] > pile[t + 1])//左右子节点取最小的
+			{
+				t++;
+			}
+			if (pile[p] > pile[t])
+			{
+				swap(pile[p], pile[t]);
+				p = t;
+				t = p * 2;//更新左节点的值;
+			}
+			else
+			{
+				break;
+			}
+		}
+	}
+}
+void remove(int* pile, int p, int& len, int check)//移除p位置的元素
+{
+	swap(pile[len--], pile[p]);//交换末尾的值,通过向上向下调整使其满足堆性质
+	up(pile, p, check);
+	down(pile, p, len, check);
+}
+void print(int len)
+{
+	for (int i = 0; i <= len; i++)
+	{
+		cout << small[i] << ' ';
+	}
+	cout << endl;
+}
+int main()
+{
+	//freopen("C:\\Users\\19363\\Desktop\\in.txt", "r", stdin);
+	//freopen("C:\\Users\\19363\\Desktop\\out.txt", "w", stdout);
+	ios::sync_with_stdio(false);
+	int t;
+	cin >> t;
+	int cas = t + 1;
+	while (t--)
+	{
+		int cas, n, cnt = 1;
+		cin >> cas >> n;
+		int x, lenbig = 0, lensmall = 1;
+		cin >> x;
+		int mid = x;
+		small[1] = mid;
+		cout << cas << ' ' << n / 2 + 1 << endl;
+		cout << mid << ' ';
+		int temp = mid;
+		for (int i = 1; i < n; i++)
+		{
+			cin >> x;
+			if (x < mid)
+			{
+				insert(big, lenbig, x, 1);
+			}
+			else
+			{
+				insert(small, lensmall, x, 0);
+			}
+			//维护大小根堆性质
+			if (lensmall > lenbig + 1)
+			{
+				int temp = gettop(small);
+				remove(small, 1, lensmall, 0);
+				insert(big, lenbig, temp, 1);
+			}
+			if (lensmall < lenbig + 1)
+			{
+				int temp = gettop(big);
+				remove(big, 1, lenbig, 1);
+				insert(small, lensmall, temp, 0);
+			}
+			if ((i + 1) % 2)
+			{
+				//print(lensmall);
+				if (i == n - 1)
+					cout << gettop(small);
+				else
+					cout << gettop(small) << ' ';
+				cnt++;
+			}
+			if (!(cnt % 10) && i % 2)
+			{
+				cout << endl;
+			}
+			mid = gettop(small);
+		}
+		cout << endl;
+	}
+	return 0;
+}
