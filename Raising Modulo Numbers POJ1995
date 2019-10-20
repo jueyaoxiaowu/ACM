@@ -1,0 +1,38 @@
+#include<iostream>
+#include<cstring>
+using namespace std;
+#define N 45000+5
+int a[N];
+int b[N];
+long long power(long long a, long long b, long long p)//求a^b%p
+{
+	long long ans = 1%p;
+	for (; b; b >>= 1)
+	{
+		if (b & 1)
+		{
+			ans = ans * a % p;
+		}
+		a = a * a % p;
+	}
+	return ans;
+}
+
+int main()
+{
+	int t;
+	cin >> t;
+	while (t--)
+	{
+		long long ans = 0;
+		int p,n;
+		cin >> p >> n;
+		for (int i = 0; i < n; i++)
+		{
+			cin >> a[i] >> b[i];
+			ans = (ans + power(a[i], b[i], p))%p;
+		}
+		cout << ans << endl;
+	}
+	return 0;
+}
