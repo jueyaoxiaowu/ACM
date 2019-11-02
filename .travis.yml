@@ -1,0 +1,4 @@
+language: c++
+script:
+- gcc HDU n皇后问题.cpp -o HDU n皇后问题
+- ./HDU n皇后问题
