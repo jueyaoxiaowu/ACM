@@ -1,0 +1,76 @@
+#include<iostream>
+#include<cstring>
+#include<algorithm>
+using namespace std;
+#define N 1000000+5
+#define P 131
+#define ull unsigned long long
+char s[N];
+ull shash[N],hashrev[N],p[N];
+int h1(int i,int len)
+{
+	ull t1 = shash[i] - shash[i - len - 1] * p[len + 1];
+	ull t2 = hashrev[i] - hashrev[i +len + 1] * p[len + 1];
+	return t1 == t2;
+}
+int h2(int i, int len)
+{
+	ull t1 = shash[i] - shash[i - len - 1] * p[len + 1];
+	ull t2 = hashrev[i+1] - hashrev[i + len + 2] * p[len + 1];
+	return t1 == t2;
+}
+int main()
+{
+	int cas = 0;
+	while (scanf("%s", s + 1) && s[1] != 'E')
+	{
+		int len = strlen(s + 1);
+		p[0] = 1;
+		for (int i = 1; i <= len; i++)
+		{
+			shash[i] = shash[i - 1] * P + s[i];
+			p[i] = p[i - 1] * P;
+			//cout << shash[i]<<endl;
+		}
+		hashrev[len + 1] = 0;
+		for (int i = len ; i > 0; i--)				//注意，i不可从len+1开始，否则由于加s[i]问题，hashrev会出错！
+		{
+			hashrev[i] = hashrev[i+1] * P + s[i];	//破案了
+		}
+		int max1 = 0,max2 = 0,ans;
+		for (int i = 1; i <= len; i++)
+		{
+			int l = 0, r = i-1;
+			while (l < r)
+			{
+				int mid = (l + r) / 2;
+				if (!h1(i, mid+1))
+				{
+					r = mid;
+				}
+				else
+				{
+					l = mid + 1;
+				}
+			}
+			max1 = max(max1, l);
+			l = 0, r = i - 1;
+			while (l < r)
+			{
+				int mid = (l + r) / 2;
+				if (!h2(i, mid+1))
+				{
+					r = mid;
+				}
+				else
+				{
+					l = mid + 1;
+				}
+			}
+			max2 = max(max2, l+1);
+		}
+		ans = max(2 * max1 + 1, 2 * max2);
+		cout << "Case " << ++cas << ": " << ans << endl;
+	}
+	return 0;
+}
